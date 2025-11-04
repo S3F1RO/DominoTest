@@ -21,21 +21,25 @@ def generate_domino_set():
     random.shuffle(dominos)
     return dominos
     
-async def handler(websocket,path):
+async def handler(websocket):
     CLIENTS.add(websocket)
     print("Client connected")
+    print(len(CLIENTS))
+    if len(CLIENTS) > 2:
+        await websocket.send("Deux clients connectés, démarrer le jeu...")
+        Game = GameState()
     try:
         async for message in websocket:
-            print(f"Reçu : {message}")
+            # print(f"Reçu : {message}")
             for client in CLIENTS:
-                await client.send(message)
+                # await client.send(message)
     except websockets.ConnectionClosed:
         print ("Client déconnecté")
     finally:
         CLIENTS.remove(websocket)
 
 async def main():
-    async with websockets.serve(handler,"localhost",8000):
+    async with websockets.serve(handler,"",8000): # Qui peut se connecter à moi
         print("Serveur Websocket démarré sur ws://localhost:8000")
         await asyncio.Future()
 
