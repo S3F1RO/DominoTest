@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <link rel="stylesheet" type="text/css" href="./css/web.css" media="screen">
     <meta charset="UTF-8" />
     <title>Jeu de Dominos - TP WebSocket</title>
 </head>
@@ -10,10 +11,20 @@
     <div id="status">Déconnecté</div>
 
     <button id="connectBtn">Se connecter au serveur</button>
+    <button id="joinBtn">Rejoindre une partie</button>
+    <button id="playBtn">Jouer</button>
+    <ul>
+        <li> <input id="domino" placeholder="Numéros domino"/></li>
+    </ul>
+    <ul>
+        <li><button id="sideBtn">Gauche</button></li>
+        <li><button id="side2Btn">Droite</button></li>
+        <li><button id="submitBtn">Envoyer</button>  </li>
+        <li><button id="passBtn">Passer son tour</button>  
+    </ul>
 
     <pre id="log"></pre>
 
     <script src="app.js"></script>
-
 </body>
 </html>
