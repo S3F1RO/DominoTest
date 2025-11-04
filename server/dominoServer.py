@@ -33,7 +33,6 @@ async def handler(websocket):
     async for message in websocket:
         print(len(CLIENTS))
         # Verify if there are too many clients
-        await websocket.send("En attente d'un autre client...")
         if len(CLIENTS) > 4 :
             print("Trop de clients connectés, déconnexion...")
             await websocket.send("Trop de clients connectés, déconnexion...")
@@ -65,6 +64,7 @@ async def handler(websocket):
         #     print("Client déconnecté")
         # finally:
         #     CLIENTS.remove(websocket)
+        await websocket.send("En attente d'un autre client...")
 
 async def main():
     async with websockets.serve(handler,"",8000): # Qui peut se connecter à moi
