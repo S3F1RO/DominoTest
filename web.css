@@ -1,0 +1,90 @@
+/*------------------------------------------------------------------------------
+	WEB : page design
+------------------------------------------------------------------------------*/
+
+
+
+/*==============================
+	Layout
+==============================*/
+
+/* Body & Wrapper */
+
+
+
+body {
+	background-color: rgb(170, 231, 221);
+}
+
+/*==============================
+	Style
+==============================*/
+
+/* Set font */
+* {
+	font-family: 'Ubuntu', 'Arial', 'Helvetica', 'Palatino', sans-serif;
+}
+
+/* Body & Wrapper */
+
+h1{
+	text-align: center;
+	font-weight: bold;
+	color: blueviolet;
+}
+
+
+button {
+	width: 15vh;
+	height: 5vh;
+	margin-bottom: 1%;
+	display: block;
+	block-size: 10%;
+	background-color: rgb(24, 185, 206);
+	border: none;
+}
+li{
+	display: inline-block;
+}
+
+
+
+
+
+
+
+
+
+/*==============================
+	Classes
+==============================*/
+
+
+
+
+
+/*==============================
+	Responsive design
+==============================*/
+
+/* Media query : mobile */
+@media (max-width: 600px) {
+
+
+}
+
+
+
+/* Media query : tablet */
+@media (min-width: 600px) and (max-width: 1200px) {
+
+
+}
+
+
+
+/* Media query : laptop */
+@media (min-width: 1200px) {
+
+
+}
