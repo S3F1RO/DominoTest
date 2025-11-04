@@ -4,7 +4,7 @@ import websockets
 import random
 
 CLIENTS = set()
-
+id=0
 class GameState:
     def __init__(self):
         self.players=[]
@@ -23,16 +23,24 @@ def generate_domino_set():
     
 async def handler(websocket):
     CLIENTS.add(websocket)
+    global id
+    id+=1
     print("Client connected")
-    print(len(CLIENTS))
     if len(CLIENTS) > 2:
-        await websocket.send("Deux clients connectés, démarrer le jeu...")
-        Game = GameState()
+        #create party
+        dominos = generate_domino_set()
+        for i in range(len(CLIENTS)):
+            players.append(i)
+            hand[i]=dominos[i*7:(i+1)*7]
+        boneyard=[dominos[len(CLIENTS)]]
+        game = GameState(players,hands,[],0,boneyard)
+        await websocket.send("Clients connectés, démarrer le jeu...")
+
     try:
         async for message in websocket:
             # print(f"Reçu : {message}")
             for client in CLIENTS:
-                # await client.send(message)
+                await client.send(message)
     except websockets.ConnectionClosed:
         print ("Client déconnecté")
     finally:
