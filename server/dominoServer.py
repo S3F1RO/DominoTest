@@ -4,7 +4,7 @@ import websockets
 import random
 
 CLIENTS = set()
-id=0
+
 class GameState:
     def __init__(self):
         self.players=[]
@@ -23,8 +23,6 @@ def generate_domino_set():
     
 async def handler(websocket):
     CLIENTS.add(websocket)
-    global id
-    id+=1
     print("Client connected")
     if len(CLIENTS) > 2:
         #create party
