@@ -33,7 +33,7 @@ async def handler(websocket):
     async for message in websocket:
         print(len(CLIENTS))
         # Verify if there are too many clients
-        
+        await websocket.send("En attente d'un autre client...")
         if len(CLIENTS) > 4 :
             print("Trop de clients connectés, déconnexion...")
             await websocket.send("Trop de clients connectés, déconnexion...")
@@ -53,15 +53,18 @@ async def handler(websocket):
             boneyard=[dominos[clients*7:]]
             game = GameState(players,hands,[],0,boneyard)
 
-            # try:
+        # try:
             for i,client in enumerate(CLIENTS):
                 print("Hello")
-                await websocket.send("Coucou")
-                await client.send(json.dumps({"player":game.players[i],"hands":game.hands[i],"board":game.board}))
-    except websockets.ConnectionClosed:
-        print ("Client déconnecté")
-    finally:
-        CLIENTS.remove(websocket)
+                await client.send(json.dumps({
+                    "player":game.players[i],
+                    "hands":[game.hands[i]],
+                    "board":game.board
+                    }))
+        # except websockets.ConnectionClosed:
+        #     print("Client déconnecté")
+        # finally:
+        #     CLIENTS.remove(websocket)
 
 async def main():
     async with websockets.serve(handler,"",8000): # Qui peut se connecter à moi
