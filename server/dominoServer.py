@@ -3,6 +3,7 @@ import asyncio
 import websockets
 import random
 import json
+
 CLIENTS = set()
 
 class GameState:
