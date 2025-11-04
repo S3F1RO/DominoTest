@@ -18,14 +18,14 @@ document.getElementById("connectBtn").addEventListener("click", () => {
 socket.onmessage = (event) => {
     data = JSON.parse(event.data);
     log("Joueur " + data.player);
-    var hands = data.hands;
+    const hands = data.hands;
     const formattedHands = hands.map(d => `(${d[0]}) (${d[1]}) (${d[2]}) (${d[3]}) (${d[4]}) (${d[5]}) (${d[6]})`).join(" ");
     log("Tu as une main de " + formattedHands);
 };
 
 socket.onclose = () => {
     document.getElementById("status").textContent = "Déconnecté ";
-    var status = document.getElementById("status");
+    const status = document.getElementById("status");
     status.style.color="red";
     log("Connexion fermée");
 };
@@ -48,11 +48,11 @@ document.getElementById("domino").addEventListener("keypress", () => {
 document.getElementById("sideBtn").addEventListener("click", () => {
     side = "left";
 
-    var all = document.getElementById("button");
-    all.style.color="black";
+    const all = document.getElementById("button");
+    all.style.color = "black";
 
-    var focus = document.getElementById("sideBtn");
-    focus.style.color="blue";
+    const focus = document.getElementById("sideBtn");
+    focus.style.color = "blue";
 
     console.log(side)
 });
@@ -60,10 +60,10 @@ document.getElementById("sideBtn").addEventListener("click", () => {
 document.getElementById("side2Btn").addEventListener("click", () => {
     side = "right"
 
-    var all = document.getElementById("button");
+    const all = document.getElementById("button");
     all.style.color="black";
 
-    var focus = document.getElementById("side2Btn");
+    const focus = document.getElementById("side2Btn");
     focus.style.color="blue";
 });
 document.getElementById("playBtn").addEventListener("click", () => {
