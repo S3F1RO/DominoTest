@@ -19,10 +19,12 @@ socket.onmessage = (event) => {
     data = JSON.parse(event.data);
     // Tu dois parse la data que je t'envoie en fonction du type
     // if data['type'] == "update"
-    log("Joueur " + data.player);
-    const hands = data.hands;
-    const formattedHands = hands.map(d => `(${d[0]}) (${d[1]}) (${d[2]}) (${d[3]}) (${d[4]}) (${d[5]}) (${d[6]})`).join(" ");
-    log("Tu as une main de " + formattedHands);
+    if (data['type'] == "infoS") log(data['dataS'])
+    // if (data['init']) log(data['init'])
+    // log("Joueur " + data.player);
+    // const hands = data.hands;
+    // const formattedHands = hands.map(d => `(${d[0]}) (${d[1]}) (${d[2]}) (${d[3]}) (${d[4]}) (${d[5]}) (${d[6]})`).join(" ");
+    // log("Tu as une main de " + formattedHands);
 };
 
 socket.onclose = () => {
