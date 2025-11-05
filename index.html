@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <link rel="stylesheet" type="text/css" href="./web.css" media="screen">
+    <link rel="icon" type="image/x-icon" href="./images.png">
     <meta charset="UTF-8" />
     <title>Jeu de Dominos - TP WebSocket</title>
 </head>
@@ -12,7 +13,6 @@
 
     <button id="connectBtn">Se connecter au serveur</button>
     <button id="joinBtn">Rejoindre une partie</button>
-    <button id="playBtn">Jouer</button>
     <ul>
         <li> <input id="domino" placeholder="Numéros domino"/></li>
     </ul>
@@ -22,6 +22,9 @@
         <li><button id="submitBtn">Envoyer</button>  </li>
         <li><button id="passBtn">Passer son tour</button>  
     </ul>
+    <input type="hidden" id="idPlayer"/>
+
+
 
     <pre id="log"></pre>
 
