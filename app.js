@@ -6,7 +6,7 @@ function log(msg) {
 }
 
 document.getElementById("connectBtn").addEventListener("click", () => {
-    socket = new WebSocket("ws://localhost:8000");
+    socket = new WebSocket("ws://10.122.7.180:8000");
     socket.onopen = () => {
         document.getElementById("status").textContent = "Connecté ";
         document.getElementById("status").style.color="green"
@@ -19,11 +19,27 @@ socket.onmessage = (event) => {
     data = JSON.parse(event.data);
     // Tu dois parse la data que je t'envoie en fonction du type
     // if data['type'] == "update"
-    if (data['type'] == "infoS") log(data['dataS'])
+    if (data['type'] == "infoS") log(data['dataS']);
+    if (data['type'] == "init"){
+        const formattedHands = data['hands'].map(d => `(${d[0]}) (${d[1]}) (${d[2]}) (${d[3]}) (${d[4]}) (${d[5]}) (${d[6]})`).join(" ");
+        log("Vous êtes le joueur " + data['player']);
+        log("Main : " + formattedHands) ;
+        log("Table vide : " + data['board']);
+    } 
+    if (data['type'] == "update") {
+        log("Table : " + data['board']);
+        log("Tour du joueur :" + data['current_player'])
+    }
+    if (data['type'] == "error") log(data['message']);
+    if (data['type'] == "win") {
+        log("Le joueur : " + data['player'] + " a gagné la partie!")
+    }
+    if (data['type'] == "game_over") {
+        log("Fin du jeu.");
+    }
     // if (data['init']) log(data['init'])
     // log("Joueur " + data.player);
     // const hands = data.hands;
-    // const formattedHands = hands.map(d => `(${d[0]}) (${d[1]}) (${d[2]}) (${d[3]}) (${d[4]}) (${d[5]}) (${d[6]})`).join(" ");
     // log("Tu as une main de " + formattedHands);
 };
 
@@ -47,7 +63,8 @@ document.getElementById("joinBtn").addEventListener("click", () => {
 
 
 document.getElementById("domino").addEventListener("keypress", () => {
-    domino = domino.value;
+    const dominoInput = document.getElementById("domino")
+    domino = dominoInput.value;
 });
 document.getElementById("sideLBtn").addEventListener("click", () => {
     side = "left";
@@ -76,9 +93,8 @@ document.getElementById("sideRBtn").addEventListener("click", () => {
     console.log(side)
 
 });
-document.getElementById("playBtn").addEventListener("click", () => {
+document.getElementById("submitBtn").addEventListener("click", () => {
     socket.send(JSON.stringify({type : "play", "domino" : domino, "side" : side}));
-    // socket.s
 });
 
 document.getElementById("passBtn").addEventListener("click", () => {
