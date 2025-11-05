@@ -22,32 +22,34 @@ class GameState:
         self.boneyard = boneyard
         self.state = 0
 
-    def computingTurns(self, domino, board, side, turn_index):
-        if domino == "":
-            self.turn_index += 1
-            websockets.send(json.dumps({
-                "type": "update",
-                "board": self.board,
-                "current_player" : self.players[self.turn_index]
-            }))
-            pass
-        else:
-            self.board = play_domino(domino, board, side)
-            if domino in self.hands[self.players[turn_index]]:
-                self.hands[self.players[turn_index]].remove(domino)
-                if self.hands[self.players[turn_index]] == []:
-                    print(f"Le joueur {self.players[turn_index]} a gagné!")
-                    websockets.send({
-                        "type": "win",
-                        "player": self.players[turn_index]
-                    })
-                else:
-                    self.turn_index += 1
-                    websockets.send(json.dumps({
-                        "type": "update",
-                        "board": self.board,
-                        "current_player" : self.players[self.turn_index]
-                    }))
+def computingTurns(domino, board, side, turn_index):
+    if domino == "":
+        turn_index += 1
+        CLIENTS[turn_index].send(json.dumps({
+            "type": "update",
+            "board": board,
+            "current_player" : players[turn_index],
+            "hands" : hands[players[turn_index]]
+        }))
+        pass
+    else:
+        board = play_domino(domino, board, side)
+        if domino in hands[players[turn_index]]:
+            hands[players[turn_index]].remove(domino)
+            if hands[players[turn_index]] == []:
+                print(f"Le joueur {players[turn_index]} a gagné!")
+                websockets.send({
+                    "type": "win",
+                    "player": players[turn_index]
+                })
+            else:
+                turn_index += 1
+                CLIENTS[turn_index].send(json.dumps({
+                    "type": "update",
+                    "board": board,
+                    "current_player" : players[turn_index],
+                    "hands" : hands[players[turn_index]]
+                }))
 
 
                 
@@ -144,11 +146,11 @@ async def handler(websocket):
         elif decodedMessage['type'] == "play":
             domino = decodedMessage['domino']
             side   = decodedMessage["side"]
-            game.computingTurns(domino,game.board,side,game.turn_index)
+            computingTurns(domino,game.board,side,game.turn_index)
 
         elif decodedMessage['type'] == "pass":
             domino = ""
-            game.computingTurns(domino,game.board,side,game.turn_index)
+            computingTurns(domino,game.board,side,game.turn_index)
 
         # except websockets.ConnectionClosed:
         #     print("Client déconnecté")
