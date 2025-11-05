@@ -23,22 +23,31 @@ class GameState:
         self.state = 0
 
     def computingTurns(self, domino, board, side, turn_index):
-        self.board = play_domino(domino, board, side)
-        if domino in self.hands[self.players[turn_index]]:
-            self.hands[self.players[turn_index]].remove(domino)
-            if self.hands[self.players[turn_index]] == []:
-                print(f"Le joueur {self.players[turn_index]} a gagné!")
-                websockets.send({
-                    "type": "win",
-                    "player": self.players[turn_index]
-                })
-            else:
-                self.turn_index += 1
-                websockets.send(json.dumps({
-                    "type": "update",
-                    "board": self.board,
-                    "current_player" : self.players[self.turn_index]
-                }))
+        if domino == "":
+            self.turn_index += 1
+            websockets.send(json.dumps({
+                "type": "update",
+                "board": self.board,
+                "current_player" : self.players[self.turn_index]
+            }))
+            pass
+        else:
+            self.board = play_domino(domino, board, side)
+            if domino in self.hands[self.players[turn_index]]:
+                self.hands[self.players[turn_index]].remove(domino)
+                if self.hands[self.players[turn_index]] == []:
+                    print(f"Le joueur {self.players[turn_index]} a gagné!")
+                    websockets.send({
+                        "type": "win",
+                        "player": self.players[turn_index]
+                    })
+                else:
+                    self.turn_index += 1
+                    websockets.send(json.dumps({
+                        "type": "update",
+                        "board": self.board,
+                        "current_player" : self.players[self.turn_index]
+                    }))
 
 
                 
@@ -126,6 +135,7 @@ async def handler(websocket):
                 game.state = 1
                 for i,client in enumerate(CLIENTS):
                     await client.send(json.dumps({
+                        "type" : "init",
                         "player":game.players[i],
                         "hands":[game.hands[i]],
                         "board":game.board
