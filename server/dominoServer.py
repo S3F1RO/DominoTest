@@ -21,6 +21,7 @@ class GameState:
         self.turn_index = turn_index
         self.boneyard = boneyard
 
+
 def generate_domino_set():
     dominos = []
     for i in range(7):
@@ -28,18 +29,31 @@ def generate_domino_set():
             dominos.append((i,j))
     random.shuffle(dominos)
     return dominos
+
+
+
+
+def can_play(domino,board):
+    if not board:
+        return True
+        left = board[0][0]
+        right = board[-1][1]
+        a,b = domino
+        return a == left or b == left or a == right or b == right
     
 async def handler(websocket):
     CLIENTS.add(websocket)
     async for message in websocket:
-        print(len(CLIENTS))
         # Verify if there are too many clients
+        if len(CLIENTS) < 2:
+            await websocket.send("En attente d'un autre client...")
+
         if len(CLIENTS) > 4 :
             print("Trop de clients connectés, déconnexion...")
             await websocket.send("Trop de clients connectés, déconnexion...")
             CLIENTS.remove(websocket)
             await websocket.close()
-        
+
         #Start the game if there are enough clients
         players = []
         hands = {}
@@ -60,11 +74,11 @@ async def handler(websocket):
                     "hands":[game.hands[i]],
                     "board":game.board
                     }))
+
         # except websockets.ConnectionClosed:
         #     print("Client déconnecté")
         # finally:
         #     CLIENTS.remove(websocket)
-        await websocket.send("En attente d'un autre client...")
 
 async def main():
     async with websockets.serve(handler,"",8000): # Qui peut se connecter à moi
