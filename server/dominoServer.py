@@ -13,6 +13,7 @@ class GameState:
         self.board = []
         self.turn_index = 0
         self.boneyard = []
+        self.state  = 0
 
     def __init__(self, players, hands, board, turn_index, boneyard):
         self.players = players
@@ -20,6 +21,7 @@ class GameState:
         self.board = board
         self.turn_index = turn_index
         self.boneyard = boneyard
+        self.state = 0
 
     def computingTurns(self, domino, board, side, turn_index):
         self.board = play_domino(domino, board, side)
@@ -38,6 +40,8 @@ class GameState:
                     "board": self.board,
                     "current_player" : self.players[self.turn_index]
                 }))
+
+
                 
 def generate_domino_set():
     dominos = []
@@ -57,7 +61,7 @@ def can_play(domino,board):
 
 def play_domino(domino,board,side):
     a,b = domino
-    if can_play(domino,board)==False:
+    if can_play(domino,board) == False:
         raise ValueError("Coup invalide")
     else: 
         if not board:
@@ -99,7 +103,7 @@ async def handler(websocket):
                     'data': 'En attente d\'un autre joueur...'
                 }))
                 nb_clients+=1
-            elif len(nb_clients) > 4:
+            elif len(nb_clients) > 4 : # J'hésite entre la taille ou si le jeu à déjà commencé
                 websocket.send(json.dumps({
                     'type':'infos',
                     'data': 'Partie pleine, vous ne pouvez pas rejoindre'
@@ -107,26 +111,34 @@ async def handler(websocket):
             else:
                 nb_clients+=1
 
-        #Start the game if there are enough clients
-        players = []
-        hands = {}
-        if len(nb_clients) >= 2:
-            clients = len(nb_clients)
-            #create party
-            dominos = generate_domino_set()
-            for i in range(clients):
-                players.append(i)
-                hands[i]=dominos[i*7:(i+1)*7]
-            boneyard=[dominos[clients*7:]]
-            game = GameState(players,hands,[],0,boneyard)
+            #Start the game if there are enough clients
+            players = []
+            hands = {}
+            if len(nb_clients) >= 2 and game.state == 0:
+                clients = len(nb_clients)
+                #create party
+                dominos = generate_domino_set()
+                for i in range(clients):
+                    players.append(i)
+                    hands[i]=dominos[i*7:(i+1)*7]
+                boneyard=[dominos[clients*7:]]
+                game = GameState(players,hands,[],0,boneyard)
+                game.state = 1
+                for i,client in enumerate(CLIENTS):
+                    await client.send(json.dumps({
+                        "player":game.players[i],
+                        "hands":[game.hands[i]],
+                        "board":game.board
+                        }))
+            # Processing game
+        elif decodedMessage['type'] == "play":
+            domino = decodedMessage['domino']
+            side   = decodedMessage["side"]
+            game.computingTurns(domino,game.board,side,game.turn_index)
 
-        # try:
-            for i,client in enumerate(CLIENTS):
-                await client.send(json.dumps({
-                    "player":game.players[i],
-                    "hands":[game.hands[i]],
-                    "board":game.board
-                    }))
+        elif decodedMessage['type'] == "pass":
+            domino = ""
+            game.computingTurns(domino,game.board,side,game.turn_index)
 
         # except websockets.ConnectionClosed:
         #     print("Client déconnecté")
