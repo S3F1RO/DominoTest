@@ -5,7 +5,6 @@ import random
 import json
 
 CLIENTS = set()
-
 class GameState:
     def __init__(self):
         self.players=[]
@@ -90,6 +89,7 @@ def play_domino(domino,board,side):
     
 async def handler(websocket):
     CLIENTS.add(websocket)
+    nb_clients = 0
     async for message in websocket:
 
         decodedMessage = json.loads(message)
@@ -97,16 +97,17 @@ async def handler(websocket):
         
         # Process people joining
         if decodedMessage['type'] == "join":
-            if len(nb_clients) < 2:
-                websocket.send(json.dumps({
-                    'type':'infos',
-                    'data': 'En attente d\'un autre joueur...'
+            print(nb_clients)
+            if nb_clients < 2:
+                await websocket.send(json.dumps({
+                    'type':'infoS',
+                    'dataS': 'En attente d\'un autre joueur...'
                 }))
                 nb_clients+=1
-            elif len(nb_clients) > 4 : # J'hésite entre la taille ou si le jeu à déjà commencé
+            elif nb_clients > 4 : # J'hésite entre la taille ou si le jeu à déjà commencé
                 websocket.send(json.dumps({
-                    'type':'infos',
-                    'data': 'Partie pleine, vous ne pouvez pas rejoindre'
+                    'type':'infoS',
+                    'dataS': 'Partie pleine, vous ne pouvez pas rejoindre'
                 }))
             else:
                 nb_clients+=1
@@ -114,14 +115,13 @@ async def handler(websocket):
             #Start the game if there are enough clients
             players = []
             hands = {}
-            if len(nb_clients) >= 2 and game.state == 0:
-                clients = len(nb_clients)
+            if nb_clients >= 2:
                 #create party
                 dominos = generate_domino_set()
-                for i in range(clients):
+                for i in range(nb_clients):
                     players.append(i)
                     hands[i]=dominos[i*7:(i+1)*7]
-                boneyard=[dominos[clients*7:]]
+                boneyard=[dominos[nb_clients*7:]]
                 game = GameState(players,hands,[],0,boneyard)
                 game.state = 1
                 for i,client in enumerate(CLIENTS):
