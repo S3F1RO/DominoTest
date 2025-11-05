@@ -105,7 +105,7 @@ document.getElementById("submitBtn").addEventListener("click", () => {
 document.getElementById("passBtn").addEventListener("click", () => {
     const player = document.getElementById("idPlayer").value;
 
-    socket.send(JSON.stringify({type : "pass"}));
+    socket.send(JSON.stringify({type : "pass", player : player}));
 
 });
 
