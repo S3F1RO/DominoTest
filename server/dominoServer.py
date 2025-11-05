@@ -27,16 +27,18 @@ class GameState:
             self.hands[self.players[turn_index]].remove(domino)
             if self.hands[self.players[turn_index]] == []:
                 print(f"Le joueur {self.players[turn_index]} a gagné!")
-                await websockets.send({
-                    "type"
+                websockets.send({
+                    "type": "win",
+                    "player": self.players[turn_index]
                 })
             else:
                 self.turn_index += 1
-                await websockets.send(json.dumps({
+                websockets.send(json.dumps({
                     "type": "update",
                     "board": self.board,
                     "current_player" : self.players[self.turn_index]
                 }))
+                
 def generate_domino_set():
     dominos = []
     for i in range(7):
@@ -85,21 +87,31 @@ def play_domino(domino,board,side):
 async def handler(websocket):
     CLIENTS.add(websocket)
     async for message in websocket:
-        # Verify if there are too many clients
-        if len(CLIENTS) < 2:
-            await websocket.send("En attente d'un autre client...")
 
-        if len(CLIENTS) > 4 :
-            print("Trop de clients connectés, déconnexion...")
-            await websocket.send("Trop de clients connectés, déconnexion...")
-            CLIENTS.remove(websocket)
-            await websocket.close()
+        decodedMessage = json.loads(message)
+        print(decodedMessage["type"])
+        
+        # Process people joining
+        if decodedMessage['type'] == "join":
+            if len(nb_clients) < 2:
+                websocket.send(json.dumps({
+                    'type':'infos',
+                    'data': 'En attente d\'un autre joueur...'
+                }))
+                nb_clients+=1
+            elif len(nb_clients) > 4:
+                websocket.send(json.dumps({
+                    'type':'infos',
+                    'data': 'Partie pleine, vous ne pouvez pas rejoindre'
+                }))
+            else:
+                nb_clients+=1
 
         #Start the game if there are enough clients
         players = []
         hands = {}
-        if len(CLIENTS) >= 2:
-            clients = len(CLIENTS)
+        if len(nb_clients) >= 2:
+            clients = len(nb_clients)
             #create party
             dominos = generate_domino_set()
             for i in range(clients):
