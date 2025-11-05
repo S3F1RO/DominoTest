@@ -48,10 +48,12 @@ document.getElementById("domino").addEventListener("keypress", () => {
 document.getElementById("sideLBtn").addEventListener("click", () => {
     side = "left";
 
-    const all = document.getElementByTagName("button");
-    all.style.color = "black";
+    const all = document.getElementsByTagName("button");
+    for (let btn of all){
+        btn.style.color="black"
+    }
 
-    const focus = document.getElementById("sideBtn");
+    const focus = document.getElementById("sideLBtn");
     focus.style.color = "blue";
 
     console.log(side)
@@ -60,11 +62,15 @@ document.getElementById("sideLBtn").addEventListener("click", () => {
 document.getElementById("sideRBtn").addEventListener("click", () => {
     side = "right"
 
-    const all = document.getElementByTagName("button");
-    all.style.color="black";
+    const all = document.getElementsByTagName("button");
+    for (let btn of all){
+        btn.style.color="black"
+    }
 
-    const focus = document.getElementById("side2Btn");
-    focus.style.color="blue";
+    const focus = document.getElementById("sideRBtn");
+    focus.style.color = "blue";
+    console.log(side)
+
 });
 document.getElementById("playBtn").addEventListener("click", () => {
     socket.send(JSON.stringify({type : "play", "domino" : domino, "side" : side}));
