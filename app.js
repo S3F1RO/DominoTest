@@ -45,10 +45,10 @@ document.getElementById("joinBtn").addEventListener("click", () => {
 document.getElementById("domino").addEventListener("keypress", () => {
     domino = domino.value;
 });
-document.getElementById("sideBtn").addEventListener("click", () => {
+document.getElementById("sideLBtn").addEventListener("click", () => {
     side = "left";
 
-    const all = document.getElementById("button");
+    const all = document.getElementByTagName("button");
     all.style.color = "black";
 
     const focus = document.getElementById("sideBtn");
@@ -57,10 +57,10 @@ document.getElementById("sideBtn").addEventListener("click", () => {
     console.log(side)
 });
 
-document.getElementById("side2Btn").addEventListener("click", () => {
+document.getElementById("sideRBtn").addEventListener("click", () => {
     side = "right"
 
-    const all = document.getElementById("button");
+    const all = document.getElementByTagName("button");
     all.style.color="black";
 
     const focus = document.getElementById("side2Btn");
