@@ -40,6 +40,35 @@ def can_play(domino,board):
         right = board[-1][1]
         a,b = domino
         return a == left or b == left or a == right or b == right
+
+def play_domino(domino,board,side):
+    a,b = domino
+    if can_play(domino,board)==False:
+        raise ValueError("Coup invalide")
+    else: 
+        if not board:
+            board.append((a,b))
+            return board
+        left = board[0][0]
+        right = board[-1][1]
+        if side == "left":
+            if b == left:
+                board.insert(0,(a,b))
+            elif a == left:
+                board.insert(0,(b,a))
+            else :
+                raise ValueError("Coup invalide sur la gauche")
+        elif side == "right":
+            if a == right:
+                board.append((a,b))
+            elif b == right:
+                board.append((b,a))
+            else :
+                raise ValueError("Coup invalide sur la droite")
+        else :
+            raise ValueError("Side inconnu")
+
+        return board
     
 async def handler(websocket):
     CLIENTS.add(websocket)
