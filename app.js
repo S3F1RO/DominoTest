@@ -9,7 +9,7 @@ document.getElementById("connectBtn").addEventListener("click", () => {
     socket = new WebSocket("ws://10.122.7.180:8000");
     socket.onopen = () => {
         document.getElementById("status").textContent = "Connecté ";
-        document.getElementById("status").style.color="green"
+        document.getElementById("status").style.color="rgb(12,204,12)";
 
         log("Connecté au serveur WebSocket");
         socket.send(JSON.stringify({type: "hello", payload: "Bonjour serveur"
@@ -25,6 +25,7 @@ socket.onmessage = (event) => {
         log("Vous êtes le joueur " + data['player']);
         log("Main : " + formattedHands) ;
         log("Table vide : " + data['board']);
+        document.getElementById("idPlayer").value = data['player'];
     } 
     if (data['type'] == "update") {
         log("Table : " + data['board']);
@@ -62,10 +63,11 @@ document.getElementById("joinBtn").addEventListener("click", () => {
 
 
 
-document.getElementById("domino").addEventListener("keypress", () => {
-    const dominoInput = document.getElementById("domino")
-    domino = dominoInput.value;
-});
+// document.getElementById("domino").addEventListener("keypress", () => {
+//     const dominoInput = document.getElementById("domino");
+//     alert(dominoInput.value);
+//     domino = dominoInput.value;
+// });
 document.getElementById("sideLBtn").addEventListener("click", () => {
     side = "left";
 
@@ -94,11 +96,17 @@ document.getElementById("sideRBtn").addEventListener("click", () => {
 
 });
 document.getElementById("submitBtn").addEventListener("click", () => {
-    socket.send(JSON.stringify({type : "play", "domino" : domino, "side" : side}));
+    const domino = document.getElementById("domino").value;
+    const player = document.getElementById("idPlayer").value;
+
+    socket.send(JSON.stringify({type : "play", "domino" : domino, "side" : side, "player" : player}));
 });
 
 document.getElementById("passBtn").addEventListener("click", () => {
-    socket.send(JSON.stringify({type : "pass"}))
+    const player = document.getElementById("idPlayer").value;
+
+    socket.send(JSON.stringify({type : "pass"}));
+
 });
 
 });
