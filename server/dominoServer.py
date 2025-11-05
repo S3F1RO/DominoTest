@@ -55,7 +55,6 @@ async def handler(websocket):
 
         # try:
             for i,client in enumerate(CLIENTS):
-                print("Hello")
                 await client.send(json.dumps({
                     "player":game.players[i],
                     "hands":[game.hands[i]],
