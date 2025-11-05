@@ -6,7 +6,7 @@ function log(msg) {
 }
 
 document.getElementById("connectBtn").addEventListener("click", () => {
-    socket = new WebSocket("ws://10.122.7.180:8000");
+    socket = new WebSocket("ws://localhost:8000");
     socket.onopen = () => {
         document.getElementById("status").textContent = "Connecté ";
         document.getElementById("status").style.color="green"
