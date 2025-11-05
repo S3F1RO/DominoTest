@@ -3,8 +3,10 @@ import asyncio
 import websockets
 import random
 import json
-
+import ast
 CLIENTS = set()
+nb_clients = 0
+
 class GameState:
     def __init__(self):
         self.players=[]
@@ -100,7 +102,9 @@ def play_domino(domino,board,side):
     
 async def handler(websocket):
     CLIENTS.add(websocket)
-    nb_clients = 0
+    global nb_clients
+    global game
+    game = GameState([],{},[],0,[])
     async for message in websocket:
 
         decodedMessage = json.loads(message)
@@ -108,20 +112,27 @@ async def handler(websocket):
         
         # Process people joining
         if decodedMessage['type'] == "join":
-            print(nb_clients)
+            nb_clients+=1
             if nb_clients < 2:
                 await websocket.send(json.dumps({
                     'type':'infoS',
                     'dataS': 'En attente d\'un autre joueur...'
                 }))
-                nb_clients+=1
             elif nb_clients > 4 : # J'hésite entre la taille ou si le jeu à déjà commencé
-                websocket.send(json.dumps({
+                await websocket.send(json.dumps({
                     'type':'infoS',
                     'dataS': 'Partie pleine, vous ne pouvez pas rejoindre'
                 }))
-            else:
-                nb_clients+=1
+                nb_clients-=1
+                #continue
+            
+            # Example: notify all connected clients
+            for client in CLIENTS:
+                await client.send(json.dumps({
+                        'type': 'infoS',
+                        'dataS': f"{nb_clients} joueurs connectés"
+                    }))
+            print(nb_clients)
 
             #Start the game if there are enough clients
             players = []
@@ -129,12 +140,16 @@ async def handler(websocket):
             if nb_clients >= 2:
                 #create party
                 dominos = generate_domino_set()
-                for i in range(nb_clients):
+                for i in range(nb_clients+1):
                     players.append(i)
                     hands[i]=dominos[i*7:(i+1)*7]
                 boneyard=[dominos[nb_clients*7:]]
-                game = GameState(players,hands,[],0,boneyard)
+                # Initialize game state
+                game.players = players
+                game.hands = hands
+                game.boneyard = boneyard
                 game.state = 1
+                # Notify all clients that the game has started
                 for i,client in enumerate(CLIENTS):
                     await client.send(json.dumps({
                         "type" : "init",
@@ -144,18 +159,49 @@ async def handler(websocket):
                         }))
             # Processing game
         elif decodedMessage['type'] == "play":
-            domino = decodedMessage['domino']
-            side   = decodedMessage["side"]
-            computingTurns(domino,game.board,side,game.turn_index)
+            if game.state != 1:
+                await websocket.send(json.dumps({
+                    'type':'infoS',
+                    'dataS': 'La partie n\'a pas encore commencé.'
+                }))
+            else:
+                print(decodedMessage['domino'])
+                domino = ast.literal_eval(decodedMessage['domino']) # turn str into
+                side   = decodedMessage["side"]
+                player_id = decodedMessage['player']
+                if (player_id == game.turn_index):
+                    game.turn_index+=1
+                    if (can_play(domino,game.board)):
+                        game.board = play_domino(domino,game.board,side)
+                        if domino in hands[game.turn_index]:
+                            hands[game.turn_index].remove(domino)
+                            if hands[game.turn_index] == "":
+                                print ("Joueur ", game.turn_index," à gagné")
+                                await websocket.send({
+                                    'type':'gameover',
+                                    'winner' : game.turn_index,
+                                })
+                            else:
+                                await websocket.send({
+                                    'type' : 'update',
+                                    'board' : game.board
+                                    'current_player': turn_index
+                                })
+                    
 
         elif decodedMessage['type'] == "pass":
-            domino = ""
-            computingTurns(domino,game.board,side,game.turn_index)
-
-        # except websockets.ConnectionClosed:
-        #     print("Client déconnecté")
-        # finally:
-        #     CLIENTS.remove(websocket)
+                if game.state != 1:
+                    await websocket.send(json.dumps({
+                        'type':'infoS',
+                        'dataS': 'La partie n\'a pas encore commencé.'
+                    }))
+                else:
+                    game.turn_index+=1
+                    await websocket.send({
+                        'type' : 'update',
+                        'board' : game.board
+                        'current_player': turn_index
+                    })
 
 async def main():
     async with websockets.serve(handler,"",8000): # Qui peut se connecter à moi
