@@ -21,7 +21,22 @@ class GameState:
         self.turn_index = turn_index
         self.boneyard = boneyard
 
-
+    def computingTurns(self, domino, board, side, turn_index):
+        self.board = play_domino(domino, board, side)
+        if domino in self.hands[self.players[turn_index]]:
+            self.hands[self.players[turn_index]].remove(domino)
+            if self.hands[self.players[turn_index]] == []:
+                print(f"Le joueur {self.players[turn_index]} a gagné!")
+                await websockets.send({
+                    "type"
+                })
+            else:
+                self.turn_index += 1
+                await websockets.send(json.dumps({
+                    "type": "update",
+                    "board": self.board,
+                    "current_player" : self.players[self.turn_index]
+                }))
 def generate_domino_set():
     dominos = []
     for i in range(7):
@@ -29,9 +44,6 @@ def generate_domino_set():
             dominos.append((i,j))
     random.shuffle(dominos)
     return dominos
-
-
-
 
 def can_play(domino,board):
     if not board:
