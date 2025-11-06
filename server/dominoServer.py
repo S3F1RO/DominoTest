@@ -83,7 +83,6 @@ async def handler(websocket):
                     players.append(websocket)
                     print(f"Joueur ajouté ({len(players)} total)")
                 
-                # if len(CLIENTS) >=2:
                 if len(players) >= 2 and game is None:
                     game = GameState(players)
                     print("La partie commence")
