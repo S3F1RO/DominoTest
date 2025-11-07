@@ -13,7 +13,7 @@
 
 
 body {
-	background-image: url("./medias/p47bS.png");
+	background-image: url("../medias/p47bS.png");
 	background-size: cover;
 
 }
@@ -57,11 +57,18 @@ button {
 }
 
 #log {
-	animation: colorChange 5s infinite;
 	color: rgb(8, 255, 234);
-	overflow-y: auto;
-	
+	height: 25%;
+	background: rgba(255, 255, 255, 0.1); 
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	white-space: pre-wrap;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+	overflow-y: scroll;
+	width: 50vw;
 }
+
 
 input:focus{
 	outline-color:blueviolet;
@@ -72,29 +79,82 @@ h1 > img{
 	display: inline;
 	height: 50px;
 }
-#chatDisplay{
 
+.chat{
 	position: fixed;
-	bottom: 20px;
+	bottom: 25px;
 	right: 20px;
 	z-index: 1000;
+	width: 15vw;
+	padding: 2vh;
+	height: 25%;
+	background: rgba(255, 255, 255, 0.1); 
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	white-space: pre-wrap;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+	
+}
 
+h4{
+	display: inline-block;
+	color: rgb(12, 204, 12);
 }
 
 li{
 	display: inline-block;
 	margin-right: 2%;
-	color: rgb(12, 204, 12);
 }
 
 input +ul >li > h4{
+	display: in;
 	color: blueviolet;
 }
 
 
+div > ul > li >input{
+	bottom: 0;
+	display: flex;
+	position: fixed;
+}
 
+#chatInput {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	border: none;
+	/* border-radius: 0px 0 10px 10px; */
+	width: 90%;
+	background-color: transparent;
+	border: 1px solid rgba(255, 255, 2	55, 0.555);
+}
+#chatDisplay{
+	position: absolute;
+	top:0;
+	overflow-y: auto;
+	height: 80%;
+	width: 90%;
+}
+.glass{
+	background: rgba(255, 255, 255, 0.1); 
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	white-space: pre-wrap;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+#chatInput:focus{
+	outline: none;
+}
+ul input:hover {
+	background-color: #b6b6b6e1;
+}
 
-
+/* div {
+	max-height: 25%;
+	overflow-y: scroll;
+} */
 
 
 
