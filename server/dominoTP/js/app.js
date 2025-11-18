@@ -10,7 +10,7 @@ function log(msg) {
 document.getElementById("disconnectBtn").style.display = "none";
 
 document.getElementById("connectBtn").addEventListener("click", () => {
-    socket = new WebSocket("ws://10.122.7.16:8000");
+    socket = new WebSocket("ws://10.122.7.180:8000");
     socket.onopen = () => {
         document.getElementById("status").textContent = "Connecté ";
         document.getElementById("status").style.color="rgb(12,204,12)";
@@ -74,7 +74,7 @@ socket.onmessage = (event) => {
     } 
     if (data['type'] == "update") {
         log("Table : " + data['board'].map(d => `(${d[0]},${d[1]})`).join(" "));
-        if (data['your_turn']){
+        if (data['current_player']){
             message = "C'est à vous de jouer";
         }else{
             message = "C'est le tour de l'autre joueur";
